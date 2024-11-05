@@ -1,0 +1,24 @@
+#+title: Readme
+
+* About this program
+This is a multi-armed bandit problems simulator that is designed for machine learning simulations (algorithm evaluation), as well as cognitive scientific analysis (parameter and model estimation and data fit).
+* The design
+Usually, a reinforcement learning system (with a single state) consists of a pair of agent and environment:
+#+begin_src ascii
+#########            #########
+#       # --action-> #       #
+# agent #            #  env  #
+#       # <-reward-- #       #
+#########            #########
+#+end_src
+In this program, a System consists of Agent and Environment.
+Agent has a Policy (such as epsilon-greedy method) and a ActionValueEstimator (such as Q-values with the learning parameter α).
+The information such as action taken and reward issued in the System is recorded in a History.
+The History can have an Evaluation that calculates the performance of the Agent in relation to the Environment.
+
+The separation of Agent into a policy and an estimator enabled
+* To-do
+- Implementation of RS, Softsatisficing and more descriptive satisficing models.
+  - RS can be used with Q-values, not just with the average reward estimator, which could even make the likelihoood analysis smoother.
+- Parameter recovery analysis, and how to implement it into the current design.
+- Data fit with the actual bandit problem experiment data.
