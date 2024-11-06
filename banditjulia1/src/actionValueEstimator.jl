@@ -3,12 +3,7 @@ abstract type AbstractActionValueEstimator end
 mutable struct SampleAverageEstimator <: AbstractActionValueEstimator
     Q::Vector{Float64}
     N::Vector{Int}
-end
-
-function SampleAverageEstimator(n_arms::Int)
-    Q = zeros(n_arms)
-    N = zeros(Int, n_arms)
-    SampleAverageEstimator(Q, N)
+    SampleAverageEstimator(n_arms::Int) = new(zeros(n_arms), zeros(Int, n_arms))
 end
 
 # TODO validate anyway
@@ -21,11 +16,7 @@ end
 mutable struct QEstimator <: AbstractActionValueEstimator
     Q::Vector{Float64}
     α::Float64
-end
-
-function QEstimator(α::Float64, n_arms::Int)
-    Q = zeros(n_arms)
-    QEstimator(Q, α)
+    QEstimator(α::Float64, n_arms::Int) = new(zeros(n_arms), α)
 end
 
 function update!(estimator::QEstimator, action::Int, reward::Float64)
@@ -38,11 +29,7 @@ mutable struct DLREstimator <: AbstractActionValueEstimator
     Q::Vector{Float64}
     alpha_pos::Float64
     alpha_neg::Float64
-end
-
-function DLREstimator(alpha_pos::Float64, alpha_neg::Float64, n_arms::Int)
-    Q = zeros(n_arms)
-    DLREstimator(Q, alpha_pos, alpha_neg)
+    DLREstimator(alpha_pos::Float64, alpha_neg::Float64, n_arms::Int) = new(zeros(n_arms), alpha_pos, alpha_neg)
 end
 
 function update!(estimator::DLREstimator, action::Int, reward::Float64)
@@ -58,12 +45,7 @@ end
 mutable struct ThompsonSamplingEstimator <: AbstractActionValueEstimator
     alpha::Vector{Float64}
     beta::Vector{Float64}
-end
-
-function ThompsonSamplingEstimator(n_arms::Int)
-    alpha = ones(n_arms)
-    beta = ones(n_arms)
-    ThompsonSamplingEstimator(alpha, beta)
+    ThompsonSamplingEstimator(n_arms::Int) = new(ones(n_arms), ones(n_arms))
 end
 
 function update!(estimator::ThompsonSamplingEstimator, action::Int, reward::Float64)
