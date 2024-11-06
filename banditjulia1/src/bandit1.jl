@@ -4,13 +4,13 @@ using DataFrames
 using Distributions
 using StatsBase
 using Optim
-include("ActionValueEstimator.jl")
-include("Policy.jl")
-include("System.jl")
-include("Environment.jl")
-include("History.jl")
-include("Evaluation.jl")
-include("Agent.jl")
+include("actionvalueestimator.jl")
+include("policy.jl")
+include("agent.jl")
+include("environment.jl")
+include("history.jl")
+include("system.jl")
+include("evaluation.jl")
 
 # Run the Simulation
 function run!(system::AbstractSystem, steps::Int)
