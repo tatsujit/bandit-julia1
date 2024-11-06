@@ -17,6 +17,8 @@ The information such as action taken and reward issued in the System is recorded
 The History can have an Evaluation that calculates the performance of the Agent in relation to the Environment.
 
 The separation of Agent into a policy and an estimator enabled
+combinations of them, such as Softmax with Q-values and Softmax with
+sample average estimator. 
 * To-do
 - Implementation of RS, Softsatisficing and more descriptive satisficing models.
   - RS can be used with Q-values, not just with the average reward estimator, which could even make the likelihoood analysis smoother.
