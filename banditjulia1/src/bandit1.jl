@@ -20,7 +20,7 @@ function run!(system::AbstractSystem, steps::Int)
 end
 
 rseed = 1234
-rng1 = MersenneTwister() # TODO: rseed input and also use Xoshiro
+rng1 = Xoshiro(rseed) # DONE: rseed input and also use Xoshiro
 n_arms = 3
 ε = 0.1
 agent1 = Agent(SampleAverageEstimator(n_arms), EpsilonGreedyPolicy(ε))
