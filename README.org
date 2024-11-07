@@ -3,6 +3,10 @@
 - Julia ver 1.11.0 (2024-10-07)
 * About this program
 This is a multi-armed bandit problems simulator that is designed for machine learning simulations (algorithm evaluation), as well as cognitive scientific analysis (parameter and model estimation and data fit).
+#+begin_src sh
+julia -p 4 bandit1.jl
+#+end_src
+will show some result.
 * The design
 Usually, a reinforcement learning system (with a single state) consists of a pair of agent and environment:
 #+begin_src ascii
