@@ -31,114 +31,45 @@ sample average estimator.
 - Data fit with the actual bandit problem experiment data.
 * A Mermaid diagram
 #+begin_src mermaid
+#+begin_src mermaid
 classDiagram
-    class AbstractActionValueEstimator {
-        <<abstract>>
-    }
-    class SampleAverageEstimator {
-        +Q: Vector{Float64}
-        +N: Vector{Int}
-    }
-    class QEstimator {
-        +Q: Vector{Float64}
-        +α: Float64
-    }
-    class DLREstimator {
-        +Q: Vector{Float64}
-        +αp: Float64
-        +αn: Float64
-    }
-    class ThompsonSamplingEstimator {
-        +alpha: Vector{Float64}
-        +beta: Vector{Float64}
-    }
-
-    class AbstractPolicy {
-        <<abstract>>
-    }
-    class EpsilonGreedyPolicy {
-        +ϵ: Float64
-    }
-    class SoftmaxPolicy {
-        +β: Float64
-    }
-    class UCBPolicy {
-        +c: Float64
-        +t: Int
-    }
-    class UCBTunedPolicy {
-        +t: Int
-        +sum_of_squares: Vector{Float64}
-    }
-    class SatisficingPolicy {
-        +aspiration_level: Float64
-    }
-    class ThompsonSamplingPolicy
-
-    class AbstractEnvironment {
-        <<abstract>>
-    }
-    class Environment {
-        +n_arms: Int
-        +distributions: AbstractVector{Distribution{Univariate}}
-    }
-
-    class AbstractHistory {
-        <<abstract>>
-    }
-    class History {
-        +actions: Vector{Int}
-        +expectations: Vector{Vector{Float64}}
-        +rewards: Vector{Float64}
-    }
-    class HistoryRich {
-        +actions: Vector{Int}
-        +expectations: Vector{Vector{Float64}}
-        +rewards: Vector{Float64}
-        +values: Vector{Vector{Float64}}
-    }
-
-    class AbstractSystem {
-        <<abstract>>
-    }
-    class System {
-        +agent: Agent
-        +env: Environment
-        +history: AbstractHistory
-        +rng: AbstractRNG
-    }
-    class SystemRich {
-        +agent: Agent
-        +env: Environment
-        +history: AbstractHistory
-        +rng: AbstractRNG
-    }
-
-    class Agent {
-        +estimator: AbstractActionValueEstimator
-        +policy: AbstractPolicy
-    }
+    class AbstractActionValueEstimator["AbstractActionValueEstimator"]
+    class SampleAverageEstimator["SampleAverageEstimator"]
+    class QEstimator["QEstimator"]
+    class DLREstimator["DLREstimator"]
+    class ThompsonSamplingEstimator["ThompsonSamplingEstimator"]
+    class AbstractPolicy["AbstractPolicy"]
+    class EpsilonGreedyPolicy["EpsilonGreedyPolicy"]
+    class SoftmaxPolicy["SoftmaxPolicy"]
+    class UCBPolicy["UCBPolicy"]
+    class UCBTunedPolicy["UCBTunedPolicy"]
+    class SatisficingPolicy["SatisficingPolicy"]
+    class ThompsonSamplingPolicy["ThompsonSamplingPolicy"]
+    class AbstractEnvironment["AbstractEnvironment"]
+    class Environment["Environment"]
+    class AbstractHistory["AbstractHistory"]
+    class History["History"]
+    class HistoryRich["HistoryRich"]
+    class AbstractSystem["AbstractSystem"]
+    class System["System"]
+    class SystemRich["SystemRich"]
+    class Agent["Agent"]
 
     AbstractActionValueEstimator <|-- SampleAverageEstimator
     AbstractActionValueEstimator <|-- QEstimator
     AbstractActionValueEstimator <|-- DLREstimator
     AbstractActionValueEstimator <|-- ThompsonSamplingEstimator
-
     AbstractPolicy <|-- EpsilonGreedyPolicy
     AbstractPolicy <|-- SoftmaxPolicy
     AbstractPolicy <|-- UCBPolicy
     AbstractPolicy <|-- UCBTunedPolicy
     AbstractPolicy <|-- SatisficingPolicy
     AbstractPolicy <|-- ThompsonSamplingPolicy
-
     AbstractEnvironment <|-- Environment
-
     AbstractHistory <|-- History
     AbstractHistory <|-- HistoryRich
-
     AbstractSystem <|-- System
     AbstractSystem <|-- SystemRich
-
     Agent --> AbstractActionValueEstimator
     Agent --> AbstractPolicy
     System --> Agent
