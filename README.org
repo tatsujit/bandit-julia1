@@ -29,3 +29,122 @@ sample average estimator.
   - RS can be used with Q-values, not just with the average reward estimator, which could even make the likelihoood analysis smoother.
 - Parameter recovery analysis, and how to implement it into the current design.
 - Data fit with the actual bandit problem experiment data.
+* A Mermaid diagram
+#+begin_src mermaid
+classDiagram
+    class AbstractActionValueEstimator {
+        <<abstract>>
+    }
+    class SampleAverageEstimator {
+        +Q: Vector{Float64}
+        +N: Vector{Int}
+    }
+    class QEstimator {
+        +Q: Vector{Float64}
+        +α: Float64
+    }
+    class DLREstimator {
+        +Q: Vector{Float64}
+        +αp: Float64
+        +αn: Float64
+    }
+    class ThompsonSamplingEstimator {
+        +alpha: Vector{Float64}
+        +beta: Vector{Float64}
+    }
+
+    class AbstractPolicy {
+        <<abstract>>
+    }
+    class EpsilonGreedyPolicy {
+        +ϵ: Float64
+    }
+    class SoftmaxPolicy {
+        +β: Float64
+    }
+    class UCBPolicy {
+        +c: Float64
+        +t: Int
+    }
+    class UCBTunedPolicy {
+        +t: Int
+        +sum_of_squares: Vector{Float64}
+    }
+    class SatisficingPolicy {
+        +aspiration_level: Float64
+    }
+    class ThompsonSamplingPolicy
+
+    class AbstractEnvironment {
+        <<abstract>>
+    }
+    class Environment {
+        +n_arms: Int
+        +distributions: AbstractVector{Distribution{Univariate}}
+    }
+
+    class AbstractHistory {
+        <<abstract>>
+    }
+    class History {
+        +actions: Vector{Int}
+        +expectations: Vector{Vector{Float64}}
+        +rewards: Vector{Float64}
+    }
+    class HistoryRich {
+        +actions: Vector{Int}
+        +expectations: Vector{Vector{Float64}}
+        +rewards: Vector{Float64}
+        +values: Vector{Vector{Float64}}
+    }
+
+    class AbstractSystem {
+        <<abstract>>
+    }
+    class System {
+        +agent: Agent
+        +env: Environment
+        +history: AbstractHistory
+        +rng: AbstractRNG
+    }
+    class SystemRich {
+        +agent: Agent
+        +env: Environment
+        +history: AbstractHistory
+        +rng: AbstractRNG
+    }
+
+    class Agent {
+        +estimator: AbstractActionValueEstimator
+        +policy: AbstractPolicy
+    }
+
+    AbstractActionValueEstimator <|-- SampleAverageEstimator
+    AbstractActionValueEstimator <|-- QEstimator
+    AbstractActionValueEstimator <|-- DLREstimator
+    AbstractActionValueEstimator <|-- ThompsonSamplingEstimator
+
+    AbstractPolicy <|-- EpsilonGreedyPolicy
+    AbstractPolicy <|-- SoftmaxPolicy
+    AbstractPolicy <|-- UCBPolicy
+    AbstractPolicy <|-- UCBTunedPolicy
+    AbstractPolicy <|-- SatisficingPolicy
+    AbstractPolicy <|-- ThompsonSamplingPolicy
+
+    AbstractEnvironment <|-- Environment
+
+    AbstractHistory <|-- History
+    AbstractHistory <|-- HistoryRich
+
+    AbstractSystem <|-- System
+    AbstractSystem <|-- SystemRich
+
+    Agent --> AbstractActionValueEstimator
+    Agent --> AbstractPolicy
+    System --> Agent
+    System --> Environment
+    System --> AbstractHistory
+    SystemRich --> Agent
+    SystemRich --> Environment
+    SystemRich --> AbstractHistory
+#+end_src
