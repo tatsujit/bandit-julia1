@@ -1,5 +1,6 @@
 #+title: Readme
-
+* Requirements
+- Julia ver 1.11.0 (2024-10-07)
 * About this program
 This is a multi-armed bandit problems simulator that is designed for machine learning simulations (algorithm evaluation), as well as cognitive scientific analysis (parameter and model estimation and data fit).
 * The design

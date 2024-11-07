@@ -5,17 +5,17 @@ struct History <: AbstractHistory
     actions::Vector{Int}
     expectations::Vector{Vector{Float64}} # TODO 非定常環境を想定して、毎trialの期待値を保存する
     rewards::Vector{Float64}
-end
-function History(expected_trials::Int=0)
-    actions = Vector{Int}(undef, 0)
-    expectations = Vector{Vector{Float64}}()
-    rewards = Vector{Float64}(undef, 0)
-    if expected_trials > 0
-        sizehint!(actions, expected_trials)
-        sizehint!(expectations, expected_trials)
-        sizehint!(rewards, expected_trials)
+    function History(expected_trials::Int=0)
+        actions = Vector{Int}(undef, 0)
+        expectations = Vector{Vector{Float64}}()
+        rewards = Vector{Float64}(undef, 0)
+        if expected_trials > 0
+            sizehint!(actions, expected_trials)
+            sizehint!(expectations, expected_trials)
+            sizehint!(rewards, expected_trials)
+        end
+        new(actions, expectations, rewards)
     end
-    History(actions, expectations, rewards)
 end
 struct HistoryRich <: AbstractHistory
     actions::Vector{Int}
