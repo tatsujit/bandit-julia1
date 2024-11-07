@@ -1,14 +1,21 @@
 abstract type AbstractSystem end
+function toString(abstractSystem::AbstractSystem)::String
+    typeof(abstractSystem)
+end
 # System Definition
 struct System <: AbstractSystem
     agent::Agent
     env::Environment
     history::AbstractHistory
     rng::AbstractRNG  # Add RNG to System
+    function System(agent::Agent, env::Environment, rng::AbstractRNG)
+        history = History()
+        new(agent, env, history, rng)
+    end
 end
-function System(agent::Agent, env::Environment, rng::AbstractRNG)
-    history = History()
-    System(agent, env, history, rng)
+function toString(system::System, verbose::Bool)
+    dc = decompose(system)
+    verbose ? dc : toString(system)
 end
 # System Definition
 struct SystemRich <: AbstractSystem
@@ -22,12 +29,13 @@ function SystemRich(agent::Agent, env::Environment, rng::AbstractRNG)
     System(agent, env, history, rng)
 end
 # Step Function for the System
-function step!(system::System)
+function step!(system::AbstractSystem)
     agent = system.agent
     estimator = agent.estimator
     policy = agent.policy
     rng = system.rng
     action = select_action(policy, estimator, rng)
+    n_arms = system.env.n_arms
     # TODO make this a function and generalize it to non-Bernoulli rewards
     expectations = [system.env.distributions[i].p for i in 1:n_arms]
     reward = sample_reward(system.env, action, rng)

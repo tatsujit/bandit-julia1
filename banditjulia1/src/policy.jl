@@ -2,26 +2,24 @@ abstract type AbstractPolicy end
 
 # Epsilon-Greedy Policy
 struct EpsilonGreedyPolicy <: AbstractPolicy
-    epsilon::Float64
+    ϵ::Float64
 end
-
+toString(egp::EpsilonGreedyPolicy) = "egp($(egp.ϵ))"
 function select_action(policy::EpsilonGreedyPolicy, estimator::AbstractActionValueEstimator, rng::AbstractRNG)
     n_arms = length(estimator.Q)
-    if rand(rng) < policy.epsilon
+    if rand(rng) < policy.ϵ
         return rand(rng, 1:n_arms)
     else
         return argmax(estimator.Q)
     end
 end
-
 # Softmax Policy (mutable would be preferable but probably no theory for adjusting β yet?)
 # It can take any kind of action values (the value difference is the only thing that matters)
 struct SoftmaxPolicy <: AbstractPolicy
     β::Float64
+    function SoftmaxPolicy(β::Float64) new(β) end
 end
-function SoftmaxPolicy(β::Float64)
-    SoftmaxPolicy(β)
-end
+toString(smp::SoftmaxPolicy) = "smp($(smp.β))"
 function select_action(policy::SoftmaxPolicy, estimator::AbstractActionValueEstimator, rng::AbstractRNG)
     values = estimator.Q
     n_arms = length(values)
@@ -38,17 +36,15 @@ function select_action(policy::SoftmaxPolicy, estimator::AbstractActionValueEsti
     probs = proto_probs / sum(proto_probs)
     return sample(1:n_arms, Weights(probs))
 end
-
 # UCB Policy
 struct UCBPolicy <: AbstractPolicy
     c::Float64
     t::Int
+    function UCBPolicy(c::Float64)
+        new(c, 0)
+    end
 end
-
-function UCBPolicy(c::Float64)
-    UCBPolicy(c, 0)
-end
-
+toString(ucb::UCBPolicy) = "ucb($(ucb.c))"
 function select_action(policy::UCBPolicy, estimator::SampleAverageEstimator)
     policy.t += 1
     n_arms = length(estimator.Q)
@@ -67,13 +63,13 @@ end
 struct UCBTunedPolicy <: AbstractPolicy
     t::Int
     sum_of_squares::Vector{Float64}
+    function UCBTunedPolicy(n_arms::Int)
+        new(0, zeros(n_arms))
+    end
 end
+toString(ut1::UCBTunedPolicy) = "ut1"
 
-function UCBTunedPolicy(n_arms::Int)
-    UCBTunedPolicy(0, zeros(n_arms))
-end
-
- function select_action(policy::UCBTunedPolicy, estimator::SampleAverageEstimator)
+function select_action(policy::UCBTunedPolicy, estimator::SampleAverageEstimator)
     policy.t += 1
     n_arms = length(estimator.Q)
     ucb_values = zeros(n_arms)
@@ -94,6 +90,7 @@ end
 struct SatisficingPolicy <: AbstractPolicy
     aspiration_level::Float64
 end
+toString(sps::SatisficingPolicy) = "sps"
 
 function select_action(policy::SatisficingPolicy, estimator::AbstractActionValueEstimator, rng::AbstractRNG)
     satisfactory_arms = findall(x -> x >= policy.aspiration_level, estimator.Q)
@@ -108,6 +105,7 @@ end
 
 # Thompson Sampling Policy
 struct ThompsonSamplingPolicy <: AbstractPolicy end
+toString(tsp::ThompsonSamplingPolicy) = "tsp"
 
 function select_action(policy::ThompsonSamplingPolicy, estimator::ThompsonSamplingEstimator, rng::AbstractRNG)
     samples = [rand(rng, Beta(estimator.alpha[i], estimator.beta[i])) for i in 1:length(estimator.alpha)]
