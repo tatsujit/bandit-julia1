@@ -1,2 +1,4 @@
 b1.org
 banditjulia1/src/bandit1_expanded.jl
+banditjulia1/src/*.mermaid
+

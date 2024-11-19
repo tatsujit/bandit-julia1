@@ -1,4 +1,3 @@
-# to be invoked by julia -p 4 bandit1.jl? but it doesn't compile the codes well?
 import Pkg; Pkg.add("Optim")
 using Random
 using DataFrames
@@ -22,8 +21,8 @@ function run!(system::AbstractSystem, trials::Int)
     end
 end
 
-sims = 4
-trials = 100
+sims = 1
+trials = 10
 rseed = [1234 * i for i in 1:sims]
 rngs = [Xoshiro(seed) for seed in rseed]
 n_arms = [3, 4, 5, 6]

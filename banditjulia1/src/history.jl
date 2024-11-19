@@ -3,7 +3,8 @@ abstract type AbstractHistory end # result
 # trials については hint を与えられるようにした
 struct History <: AbstractHistory
     actions::Vector{Int}
-    expectations::Vector{Vector{Float64}} # TODO 非定常環境を想定して、毎trialの期待値を保存する
+    expectations::Vector{Vector{Float64}} # TODO 非定常環境を想定して、毎trialの期待値を保存する？　
+    # TODO しかし、当平均で異分散の状況を扱いたくないか？　とくにリスク態度に関して
     rewards::Vector{Float64}
     function History(expected_trials::Int=0)
         actions = Vector{Int}(undef, 0)
@@ -17,39 +18,70 @@ struct History <: AbstractHistory
         new(actions, expectations, rewards)
     end
 end
+function print(history::History, verbose::Bool=false)
+    trials = length(history.actions)
+    if verbose
+        println("trials: $(trials)")
+        println("History: actions=$(history.actions)")
+        println("expectations=$(history.expectations)")
+        println("rewards=$(history.rewards)")
+    else
+        println("trials: $(trials)")
+    end
+end
 struct HistoryRich <: AbstractHistory
     actions::Vector{Int}
-    expectations::Vector{Vector{Float64}}
+    expectationss::Vector{Vector{Float64}}
     rewards::Vector{Float64}
-    values::Vector{Vector{Float64}}
+    Qss::Vector{Vector{Float64}}
 end
+# function HistoryRich()
+#     actions = Vector{Int}(undef, 0)
+#     expectations = Vector{Vector{Float64}}()
+#     rewards = Vector{Float64}(undef, 0)
+#     values = Vector{Vector{Float64}}()
+#     HistoryRich(actions, expectations, rewards, values)
+# end
 function HistoryRich(expected_trials::Int=0)
-    actions = Vector{Int}(undef, 0)
-    expectations = Vector{Vector{Float64}}()
-    rewards = Vector{Float64}(undef, 0)
-    values = Vector{Vector{Float64}}()
+    actions =       Vector{Int}(undef, 0)
+    expectationss = Vector{Vector{Float64}}()
+    rewards =       Vector{Float64}(undef, 0)
+    Qss     =       Vector{Vector{Float64}}()
     if expected_trials > 0
         sizehint!(actions, expected_trials)
-        sizehint!(expectations, expected_length)
+        sizehint!(expectationss, expected_trials)
         sizehint!(rewards, expected_trials)
-        sizehint!(values, expected_trials)  # for the length of the outer pointer array
+        sizehint!(Qss, expected_trials)
     end
-    HistoryRich(actions, expectations, rewards, values)
+    HistoryRich(actions, expectationss, rewards, Qss)
 end
-function record!(history::History, action::Int, expectations::Vector{Float64}, reward::Float64, values::Vector{Float64})
+function print(history::HistoryRich)
+    trials = length(history.actions)
+    println("trials: $(trials)")
+    println("History: ")
+    println("actions=$(history.actions)")
+    # println("expectationss=$(history.expectationss)")
+    println("rewards=$(history.rewards)")
+    println("Qss=$(history.Qss)")
+end
+# function record!(history::History, action::Int, expectations::Vector{Float64}, reward::Float64, values::Vector{Float64})
+#     push!(history.actions, action)
+#     push!(history.expectations, expectations)
+#     push!(history.rewards, reward)
+# end
+function record!(history::HistoryRich, action::Int, expectations::Vector{Float64}, reward::Float64, Qs::Vector{Float64}, verbose::Bool=false)
+    if verbose
+        println("Qs: $(Qs)")
+        println("history.Qss: $(history.Qss)")
+    end
     push!(history.actions, action)
-    push!(history.expectations, expectations)
     push!(history.rewards, reward)
+    push!(history.expectationss, copy(expectations))
+    push!(history.Qss, copy(Qs))
 end
-function record!(history::HistoryRich, action::Int, expectations::Vector{Float64}, reward::Float64, values::Vector{Float64})
-    push!(history.actions, action)
-    push!(history.expectations, expectations)
-    push!(history.rewards, reward)
-    push!(history.values, values)
-end
-function to_dataframe(history::History)
-    DataFrame(action = history.actions, expectations = history.expectations, reward = history.rewards)
-end
+# function to_dataframe(history::History)
+#     DataFrame(action = history.actions, expectations = history.expectations, reward = history.rewards)
+# end
 function to_dataframe(history::HistoryRich)
-    DataFrame(action = history.actions, expectations = history.expectations, reward = history.rewards, value = history.values)
+    DataFrame(action = history.actions, expectationss = history.expectationss, reward = history.rewards, Qss = history.Qss)
 end

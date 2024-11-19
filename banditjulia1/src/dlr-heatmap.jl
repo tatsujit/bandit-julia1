@@ -1,28 +1,16 @@
-# to be invoked by julia -p 4 bandit1.jl? but it doesn't compile the codes well?
-import Pkg; Pkg.add("Optim")
-using Random
-using DataFrames
-using Distributions
-using StatsBase
-# using Optim
-using Distributed
-include("utils.jl")
-include("actionValueEstimator.jl")
-include("policy.jl")
-include("agent.jl")
-include("environment.jl")
-include("history.jl")
-include("system.jl")
-include("evaluation.jl")
+# to be invoked by
+# `julia -p 4`
+# and then executed by
+# `include("dlr-heatmap.jl")`
+# I guess?
+include("settings.jl")
 
-# Run the Simulation
-function run!(system::AbstractSystem, trials::Int)
-    for _ in 1:trials
-        step!(system)
-    end
-end
 
-sims = 4
+αs = range(0.0, 1.0, length=101)
+βs = range(0.0, 10.0, length=101)
+
+
+sims = 1
 trials = 100
 rseed = [1234 * i for i in 1:sims]
 rngs = [Xoshiro(seed) for seed in rseed]
