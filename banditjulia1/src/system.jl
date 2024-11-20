@@ -43,7 +43,7 @@ function sample_available_arms!(sys::SystemLA)
 end
 
 # Step Function for the System
-function step!(system::AbstractSystem, t::Int, verbose::Bool=false)
+function step!(system::AbstractSystem, trial::Int, verbose::Bool=false)
     # localizing variables
     agent = system.agent
     estimator = agent.estimator
@@ -72,7 +72,7 @@ function step!(system::AbstractSystem, t::Int, verbose::Bool=false)
         println("after update: $(estimator.Q)")
     end
     # record an era in the history
-    record!(system.history, action, expectations, reward, estimator.Q)
+    record!(system.history, trial, action, expectations, reward, estimator.Q)
     if verbose
         println(action, expectations, reward, estimator.Q)
     end
@@ -83,7 +83,7 @@ function step!(system::AbstractSystem, t::Int, verbose::Bool=false)
 end
 """Run the Simulation for the system for the given number of trials"""
 function run!(system::AbstractSystem, trials::Int)
-    for t in 1:trials
-        step!(system, t)
+    for trial in 1:trials
+        step!(system, trial)
     end
 end

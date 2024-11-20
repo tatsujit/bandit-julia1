@@ -4,9 +4,21 @@
 * About this program
 This is a multi-armed bandit problems simulator that is designed for machine learning simulations (algorithm evaluation), as well as cognitive scientific analysis (parameter and model estimation and data fit).
 #+begin_src sh
-julia -p 4 bandit1.jl
+julia -t 4 bandit1.jl
 #+end_src
-will show some result.
+or
+#+begin_src sh
+julia -t 4 q-heatmap.jl
+#+end_src
+will show some result. Or probably it's better to
+#+begin_src sh
+julia -t 4
+#+end_src
+and then
+#+begin_src sh
+include("q-heatmap.jl")
+#+end_src
+or something, I guess?
 * The design
 Usually, a reinforcement learning system (with a single state) consists of a pair of agent and environment:
 #+begin_src ascii
@@ -16,15 +28,19 @@ Usually, a reinforcement learning system (with a single state) consists of a pai
 #       # <-reward-- #       #
 #########            #########
 #+end_src
-In this program, a System consists of Agent and Environment.
-Agent has a Policy (such as epsilon-greedy method) and a ActionValueEstimator (such as Q-values with the learning parameter α).
-The information such as action taken and reward issued in the System is recorded in a History.
-The History can have an Evaluation that calculates the performance of the Agent in relation to the Environment.
+In this program, a System has an Agent and an Environment.
+An Agent has two things:
+a Policy (such as epsilon-greedy method) and a ActionValueEstimator (such as Q-values with the learning parameter α).
+It also has a History that records the sequences of action selections and rewards, and other information.
+The History can turn into an Evaluation that calculates the performance and behavior measures
+of the Agent in relation to the Environment.
 
 The separation of Agent into a policy and an estimator enabled
 combinations of them, such as Softmax with Q-values and Softmax with
 sample average estimator. 
 * To-do
+There's a lot do to.
+- Parameter-performance analysis with heatmaps (`q-heatmap.jl` is the only one for now)
 - Implementation of RS, Softsatisficing and more descriptive satisficing models.
   - RS can be used with Q-values, not just with the average reward estimator, which could even make the likelihoood analysis smoother.
 - Parameter recovery analysis, and how to implement it into the current design.
@@ -78,4 +94,18 @@ classDiagram
     SystemRich --> Agent
     SystemRich --> Environment
     SystemRich --> AbstractHistory
+#+end_src
+
+
+#+begin_src mermaid
+flowchart LR
+    subgraph Universe
+        subgraph SetA[Set A]
+            subgraph SetB[Set B]
+                SetC[Set C]
+            end
+            SetD[Set D]
+        end
+        SetE[Set E]
+    end
 #+end_src

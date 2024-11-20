@@ -71,17 +71,19 @@ function evaluate(system::AbstractSystem)
     # entropy = -sum([p * log(p) for p in [mean(rewards .== i) for i in 0:1]])
     Evaluation(cum_rewards, accuracy, relative_accuracy, regret)
 end
-"""TODO: make a version where the input is smaller? (than the whole System?)"""
-function regret(system::AbstractSystem)::Float64
+"""not the whole evaluation but just the regret at the final trial
+TODO: make a version where the input is smaller? (than the whole System?)
+"""
+function regret_final(system::AbstractSystem)::Float64
     n_trials = length(system.history.rewards)
     n_arms = system.env.n_arms
-    optimal_arms = [i for i in n_arms if arms_mean[i] == max_mean]
-    arms_means = [system.environment.distributions[i].p for i in n_arms]
+    arms_means = [system.env.distributions[i].p for i in 1:n_arms]
     max_mean = maximum(arms_means)
+    optimal_arms = [i for i in 1:n_arms if arms_means[i] == max_mean]
     actions = system.history.actions
     regrets = [max_mean - arms_means[actions[t]] for t in 1:n_trials]
-    regret = sum(regrets)
-    return regret
+    regret_final = sum(regrets)
+    return regret_final
 end
 """If an action is one of the optimal arms, return true."""
 function accurate(action::Int, optimal_arms::Vector{Int})::Bool

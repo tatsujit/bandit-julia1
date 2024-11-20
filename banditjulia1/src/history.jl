@@ -1,7 +1,38 @@
 abstract type AbstractHistory end # result
-# なんか push!() を 1,000,000 回とかするのもなんなんで、
-# trials については hint を与えられるようにした
 struct History <: AbstractHistory
+    actions::Vector{Int}
+    expectations::Vector{Vector{Float64}} # TODO 非定常環境を想定して、毎trialの期待値を保存する？　
+    # TODO しかし、当平均で異分散の状況を扱いたくないか？　とくにリスク態度に関して
+    rewards::Vector{Float64}
+    function History(trials::Int, n_arms::Int)
+        actions = zeros(Int64, trials)
+        expectations = [zeros(n_arms) for _ in 1:trials]
+        rewards = zeros(Float64, trials)
+        new(actions, expectations, rewards)
+    end
+end
+function print(history::History, verbose::Bool=false)
+    trials = length(history.actions)
+    if verbose
+        println("trials: $(trials)")
+        println("History: actions=$(history.actions)")
+        println("expectations=$(history.expectations)")
+        println("rewards=$(history.rewards)")
+    else
+        println("trials: $(trials)")
+    end
+end
+function record!(history::History, trial::Int, action::Int, expectations::Vector{Float64}, reward::Float64, Qs::Vector{Float64})
+    n_arms = length(expectations) #
+    history.actions[trial] = action
+    for i in 1:n_arms
+        history.expectations[trial][i] = expectations[i]
+    end
+    # history.expectations[trial] = expectations
+    history.rewards[trial] = reward
+end
+
+struct HistoryO <: AbstractHistory
     actions::Vector{Int}
     expectations::Vector{Vector{Float64}} # TODO 非定常環境を想定して、毎trialの期待値を保存する？　
     # TODO しかし、当平均で異分散の状況を扱いたくないか？　とくにリスク態度に関して
@@ -18,7 +49,7 @@ struct History <: AbstractHistory
         new(actions, expectations, rewards)
     end
 end
-function print(history::History, verbose::Bool=false)
+function print(history::HistoryO, verbose::Bool=false)
     trials = length(history.actions)
     if verbose
         println("trials: $(trials)")
@@ -64,12 +95,12 @@ function print(history::HistoryRich)
     println("rewards=$(history.rewards)")
     println("Qss=$(history.Qss)")
 end
-# function record!(history::History, action::Int, expectations::Vector{Float64}, reward::Float64, values::Vector{Float64})
-#     push!(history.actions, action)
-#     push!(history.expectations, expectations)
-#     push!(history.rewards, reward)
-# end
-function record!(history::HistoryRich, action::Int, expectations::Vector{Float64}, reward::Float64, Qs::Vector{Float64}, verbose::Bool=false)
+function record!(history::HistoryO, trial::Int, action::Int, expectations::Vector{Float64}, reward::Float64, Qs::Vector{Float64})
+    push!(history.actions, action)
+    push!(history.expectations, expectations)
+    push!(history.rewards, reward)
+end
+function record!(history::HistoryRich, trial::Int, action::Int, expectations::Vector{Float64}, reward::Float64, Qs::Vector{Float64}, verbose::Bool=false)
     if verbose
         println("Qs: $(Qs)")
         println("history.Qss: $(history.Qss)")

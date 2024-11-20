@@ -1,4 +1,6 @@
 b1.org
 banditjulia1/src/bandit1_expanded.jl
 banditjulia1/src/*.mermaid
-
+banditjulia1/src/*.pdf
+banditjulia1/src/*.png
+banditjulia1/src/*.jld2
