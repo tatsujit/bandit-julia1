@@ -33,11 +33,61 @@ function create_regret_heatmaps(regret_matrix::Array{Float64, 3},
                   ylabel = "Learning Rate (α-)")
         # hm = heatmap!(ax, αps, αns, regret_matrix[:,:,βs_display[3*(row-1)+col]]')
         hm = heatmap!(ax, αps, αns, regret_matrix[:,:,3*(row-1)+col]')
+        # hm = heatmap!(ax, αps, αns, regret_matrix[:,:,3*(row-1)+col])
         Colorbar(f[row, 4], hm, label = "Regret")
     end
     f
 end
 
+"""
+表示する3つのパラメータのうちの一つに対して、適切な行数と列数を返す。
+行数 ≤ 列数 となる範囲で、なるべく正方形に近い形になるようにしている。
+"""
+function int_to_panel_dim(n_display::Int)::Tuple{Int, Int}
+    rows = Int(round(sqrt(n_display)))
+    cols = Int(ceil(n_display / rows))
+    return (rows, cols)
+end
+
+function display_indices(n_display::Int, size_display::Int)::Vector{Int}
+    round.(((1:n_display) ./ n_display) .* size_display)
+end
+
+function create_regret_heatmaps(regrets_matrix::Array{Float64, 3},
+                                params_and_regrets::Vector{Vector{Float64}},
+                                αps::StepRangeLen{Float64}, αns::StepRangeLen{Float64}, βs_display::Int)
+    # dependent on the parameter to get fixed
+    fixed_parameter = "β"
+    n_display = βs_display
+    x_parameter = "Learning Rate (α+)"
+    y_parameter = "Learning Rate (α-)"
+    display_dim = 3
+    # below independent of the parameter to get fixed
+    f = Figure(size = (800, 600)) # or XGA
+    size_display = size(regrets_matrix, display_dim)
+    n_display = (n_display >= size_display) ? size_display : n_display
+    d_indices = display_indices(n_display, size_display)
+    # again the next line dependent on the parameter to get fixed
+    fixed_parameter_values = [params_and_regrets[i][3] for i in d_indices]
+    println("fixed_parameter_values: ", fixed_parameter_values)
+    rows, cols = int_to_panel_dim(n_display)
+    println("n_display: $(n_display), size_display: $(size_display), rows: $(rows), cols: $(cols)")
+    for row in 1:rows, col in 1:cols
+        i = cols*(row-1)+col
+        if i > n_display
+            break
+        else
+            ax = Axis(f[row, col],
+                      title = "$(fixed_parameter) = $(fixed_parameter_values[cols*(row-1)+col])",
+                      xlabel = x_parameter,
+                      ylabel = y_parameter)
+            # hm = heatmap!(ax, αps, αns, regrets_matrix[:,:,d_indices[i]])
+            hm = heatmap!(ax, αps, αns, regrets_matrix[:,:,d_indices[i]]')
+            Colorbar(f[row, cols + 1], hm, label = "Regret")
+        end
+    end
+    f
+end
 
 # f = Figure()
 # ax = Axis(f[1, 1])

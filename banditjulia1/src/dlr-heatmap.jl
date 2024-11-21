@@ -21,25 +21,26 @@ import Pkg; Pkg.add("JLD2")
 # import Pkg; Pkg.add("CairoMakie")
 
 verbose = false
-n_αps = n_αns = n_βs = 51
-sim = 200  # simulations for each parameter value
+n_αps = n_αns = n_βs = 11 # (display が3x3なので、9以上だし、11じゃないとうまく \beta = 1.0, ..., 9.0 ともならない！）
+display_values = 9
+sim = 100  # simulations for each parameter value
 trials = 150
 # ps = [0.2, 0.2, 0.4, 0.8]
 # ps = [0.7, 0.7, 0.8, 0.9]
 # ps = [0.8, 0.8, 0.8, 0.9]
 # ps = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.8]
-# ps = [0.1, 0.1, 0.1, 0.1, 0.5]
+ps = [0.1, 0.1, 0.1, 0.1, 0.5]
 # ps = [0.4, 0.4, 0.4, 0.4, 0.8]
 # ps = [0.6, 0.6, 0.6, 0.6, 1.0]
-ps = [0.5, 0.5, 0.5, 0.5, 0.9]
+# ps = [0.5, 0.5, 0.5, 0.5, 0.9]
 n_arms = length(ps)
 distributions::AbstractVector{Distribution{Univariate}} = [Bernoulli(p) for p in ps] # for all simulations
 αps = range(0.0, 1.0, length=n_αps)
 αns = range(0.0, 1.0, length=n_αns)
 βs = range(0.0, 10.0, length=n_βs)
-αps_display = range(0.1, 0.9, length=9)
-αns_display = range(0.1, 0.9, length=9)
-βs_display = range(1.0, 9.0, length=9)
+αps_display = range(0.1, 0.9, length=display_values)
+αns_display = range(0.1, 0.9, length=display_values)
+βs_display = range(1.0, 9.0, length=display_values)
 
 parameters = [[αp, αn, β] for αp in αps for αn in αns for β in βs] # parameters = collect(Iterators.product(αs, βs))
 # println("parameters: ", parameters)
@@ -67,7 +68,7 @@ end
 regrets_matrix = reshape(regrets, n_αps, n_αns, n_βs)
 
 # fig = create_regret_heatmap(regrets_matrix[:,:,9]', αps, αns)
-fig = create_regret_heatmaps(regrets_matrix, αps, αns, βs_display)
+fig = create_regret_heatmaps(regrets_matrix, params_and_regrets, αps, αns, βs_display)
 save("regret-heatmap-" * fn_suffix * ".pdf", fig)
 fig
 
