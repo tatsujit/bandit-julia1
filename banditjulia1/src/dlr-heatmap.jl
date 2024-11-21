@@ -1,50 +1,76 @@
-# to be invoked by
-# `julia -p 4`
-# and then executed by
-# `include("dlr-heatmap.jl")`
-# I guess?
+"""
+julia> versioninfo()
+Julia Version 1.11.1
+Commit 8f5b7ca12ad (2024-10-16 10:53 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: macOS (arm64-apple-darwin22.4.0)
+  CPU: 11 × Apple M3 Pro
+  WORD_SIZE: 64
+  LLVM: libLLVM-16.0.6 (ORCJIT, apple-m3)
+Threads: 1 default, 0 interactive, 1 GC (on 5 virtual cores)
+Environment:
+  DYLD_LIBRARY_PATH = /System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/::/usr/lib:/usr/local/lib
+
+"""
+
 include("settings.jl")
+import Pkg; Pkg.add("JLD2")
+
+# import Pkg; Pkg.add("CairoMakie")
+
+verbose = false
+n_αps = n_αns = n_βs = 51
+sim = 200  # simulations for each parameter value
+trials = 150
+# ps = [0.2, 0.2, 0.4, 0.8]
+# ps = [0.7, 0.7, 0.8, 0.9]
+# ps = [0.8, 0.8, 0.8, 0.9]
+# ps = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.8]
+# ps = [0.1, 0.1, 0.1, 0.1, 0.5]
+# ps = [0.4, 0.4, 0.4, 0.4, 0.8]
+# ps = [0.6, 0.6, 0.6, 0.6, 1.0]
+ps = [0.5, 0.5, 0.5, 0.5, 0.9]
+n_arms = length(ps)
+distributions::AbstractVector{Distribution{Univariate}} = [Bernoulli(p) for p in ps] # for all simulations
+αps = range(0.0, 1.0, length=n_αps)
+αns = range(0.0, 1.0, length=n_αns)
+βs = range(0.0, 10.0, length=n_βs)
+αps_display = range(0.1, 0.9, length=9)
+αns_display = range(0.1, 0.9, length=9)
+βs_display = range(1.0, 9.0, length=9)
+
+parameters = [[αp, αn, β] for αp in αps for αn in αns for β in βs] # parameters = collect(Iterators.product(αs, βs))
+# println("parameters: ", parameters)
+# println("length(parameters): ", length(parameters))
+sims = sim * length(parameters) # total simulations
+prob_str = join(string.(Int.(100 .* ps)))
+estimator_str, policy_str = "DLR", "SM" # TODO toString should be used
+rseed = 1234
+rseeds = [rseed * i for i in 1:sims]
+
+fn_suffix = filename_suffix(sims, trials, n_arms, ps, estimator_str, policy_str, n_αps, n_αns, n_βs, rseed)
 
 
-αs = range(0.0, 1.0, length=101)
-βs = range(0.0, 10.0, length=101)
+println("sims: $(sims)")
 
+(regrets, params_and_regrets) = regret_for_DLR_αp_αn_β(parameters, sim, trials, n_arms, distributions, rseeds)
 
-sims = 1
-trials = 100
-rseed = [1234 * i for i in 1:sims]
-rngs = [Xoshiro(seed) for seed in rseed]
-n_arms = [3, 4, 5, 6]
-# rng1 = Xoshiro(rseed) # DONE: rseed input and also use Xoshiro
-# ε = 0.1
-# n_arms = 3
-εs = [0.01, 0.05, 0.1, 0.2]
-# agent1 = Agent(SampleAverageEstimator(n_arms), EpsilonGreedyPolicy(ε))
-agents = [Agent(SampleAverageEstimator(n_arms[i]), EpsilonGreedyPolicy(εs[i])) for i in 1:sims]
-# distributions1 = [Normal(1.0, 1.0), Normal(2.0, 1.0), Normal(3.0, 1.0)]
-# distributions1 = [Normal(i*1.0, 1.0) for i in 1:n_arms]
-# distributions1 = [Bernoulli(i*0.1) for i in 1:n_arms]
-distributions1s = [[Bernoulli(j*0.1) for j in 1:n_arms[i]] for i in 1:sims]
-println(typeof(distributions1s)) #
-println(typeof(distributions1s[1])) #
-# env1 = Environment(n_arms, distributions1)
-# env1s = [Environment(n_arms[i], distributions1s[i]) for i in 1:4]
-env1s = [Environment(n_arms[i], distributions1s[i]) for i in 1:4]
-# sys1 = System(agent1, env1, rng1)
-# sys1 = SystemRich(agent1, env1, rng1)
-his1s = [History(trials) for i in 1:4]
-sys1s = [SystemRich(agents[i], env1s[i], his1s[i], rngs[i]) for i in 1:4]
-
-
-Threads.@threads for i in 1:sims
-# @parallel for i in 1:sims
-    run!(sys1s[i], trials)
-    println(sys1s[i].history)
+if verbose
+    println("params_and_regrets: ", params_and_regrets)
+    println("regrets: ", regrets)
 end
 
+# println("sims: $(sims), length(regrets): $(length(regrets))")
 
-println(typeof(sys1s[1]))
-println(typeof(sys1s[1]))
+regrets_matrix = reshape(regrets, n_αps, n_αns, n_βs)
 
-println(sys1s[1].history)
-sys1s[1].history
+# fig = create_regret_heatmap(regrets_matrix[:,:,9]', αps, αns)
+fig = create_regret_heatmaps(regrets_matrix, αps, αns, βs_display)
+save("regret-heatmap-" * fn_suffix * ".pdf", fig)
+fig
+
+# save regrets_matrix' to a file
+using JLD2
+save("regrets_matrix" * fn_suffix * ".jld2", "regrets_matrix", regrets_matrix)
