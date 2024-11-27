@@ -15,24 +15,26 @@ Environment:
 
 """
 
-include("settings.jl")
-import Pkg; Pkg.add("JLD2")
+# a line needed before using as the docstring above is not to be attached to it.
 
-# import Pkg; Pkg.add("CairoMakie")
+using IceCream
+include("settings.jl")
+# import Pkg; Pkg.add("JLD2")
 
 verbose = false
-n_αps = n_αns = n_βs = 11 # (display が3x3なので、9以上だし、11じゃないとうまく \beta = 1.0, ..., 9.0 ともならない！）
+n_αps = n_αns = n_βs = 51# (display が3x3=9なら9以上だし、11じゃないとうまく \beta = 1.0, ..., 9.0 ともならない！　というのは直ったかも）
 display_values = 9
-sim = 100  # simulations for each parameter value
+sim = 1000  # simulations for each parameter value
 trials = 150
 # ps = [0.2, 0.2, 0.4, 0.8]
 # ps = [0.7, 0.7, 0.8, 0.9]
 # ps = [0.8, 0.8, 0.8, 0.9]
 # ps = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.8]
-ps = [0.1, 0.1, 0.1, 0.1, 0.5]
+# ps = [0.1, 0.1, 0.1, 0.1, 0.5]
 # ps = [0.4, 0.4, 0.4, 0.4, 0.8]
 # ps = [0.6, 0.6, 0.6, 0.6, 1.0]
 # ps = [0.5, 0.5, 0.5, 0.5, 0.9]
+ps = [0.4, 0.4, 0.4, 0.4, 0.8]
 n_arms = length(ps)
 distributions::AbstractVector{Distribution{Univariate}} = [Bernoulli(p) for p in ps] # for all simulations
 αps = range(0.0, 1.0, length=n_αps)
@@ -46,7 +48,6 @@ parameters = [[αp, αn, β] for αp in αps for αn in αns for β in βs] # pa
 # println("parameters: ", parameters)
 # println("length(parameters): ", length(parameters))
 sims = sim * length(parameters) # total simulations
-prob_str = join(string.(Int.(100 .* ps)))
 estimator_str, policy_str = "DLR", "SM" # TODO toString should be used
 rseed = 1234
 rseeds = [rseed * i for i in 1:sims]
@@ -68,10 +69,21 @@ end
 regrets_matrix = reshape(regrets, n_αps, n_αns, n_βs)
 
 # fig = create_regret_heatmap(regrets_matrix[:,:,9]', αps, αns)
-fig = create_regret_heatmaps(regrets_matrix, params_and_regrets, αps, αns, βs_display)
+# fig = create_regret_heatmaps(regrets_matrix, params_and_regrets, αps, αns, βs_display)
+fig = create_regret_heatmaps_DLR(regrets_matrix, params_and_regrets, αps, αns, 9)
 save("regret-heatmap-" * fn_suffix * ".pdf", fig)
 fig
 
 # save regrets_matrix' to a file
 using JLD2
 save("regrets_matrix" * fn_suffix * ".jld2", "regrets_matrix", regrets_matrix)
+
+
+# TODO
+#
+# load regrets_matrix' from a file and plot it
+# using JLD2
+# regrets_matrix = load("regrets_matrix" * fn_suffix * ".jld2")["regrets_matrix"]
+# fig = create_regret_heatmaps(regrets_matrix, params_and_regrets, αps, αns, 9)
+# save("regret-heatmap-" * fn_suffix * ".pdf", fig)
+# fig

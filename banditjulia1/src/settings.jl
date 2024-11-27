@@ -1,5 +1,5 @@
 # to be invoked by julia -p 4 bandit1.jl? but it doesn't compile the codes well?
-import Pkg; Pkg.add("Optim")
+# import Pkg; Pkg.add("Optim")
 using Random
 using DataFrames
 using Distributions

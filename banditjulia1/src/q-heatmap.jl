@@ -22,6 +22,7 @@ sims: 4040100, length(regrets): 40401
 julia -t 4 として FLoops を使ったら、2倍くらい速くなるけど、とにかく長い計算で効き目があるはず
 """
 
+using IceCream
 include("settings.jl")
 # import Pkg; Pkg.add("CairoMakie")
 # using BenchmarkTools
@@ -29,35 +30,38 @@ include("settings.jl")
 using FLoops
 
 verbose = false
-n_αs = n_βs = 4
-sim = 10  # simulations for each parameter value
-trials = 100
-ps = [0.2, 0.2, 0.4, 0.8]
+rseed = 1234
+n_αs = n_βs = 11
+sim = 1000  # simulations for each parameter value
+# trials = 150
+trials = [50, 100, 150, 300, 450, 600, 900, 1500, 3000]
+# trials = [50, 3000]
+n_trials = length(trials)
+# ps = [0.2, 0.2, 0.4, 0.8]
+# ps = [0.4, 0.4, 0.4, 0.8]
+# ps = [0.1, 0.1, 0.1, 0.5]
 # ps = [0.7, 0.7, 0.8, 0.9]
 # ps = [0.8, 0.8, 0.8, 0.9]
+ps = [0.4, 0.4, 0.4, 0.4, 0.8]
+# ps = [0.1, 0.1, 0.1, 0.1, 0.5]
 # ps = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.8]
 n_arms = length(ps)
 distributions::AbstractVector{Distribution{Univariate}} = [Bernoulli(p) for p in ps] # for all simulations
 αs = range(0.0, 1.0, length=n_αs)
-βs = range(0.0, 10.0, length=n_βs)
-parameters = [[α, β] for α in αs for β in βs] # parameters = collect(Iterators.product(αs, βs))
-println("parameters: ", parameters)
+βs = range(0.0, 100.0, length=n_βs)
+# parameters = [[α, β] for α in αs for β in βs]
+parameters = [(α, β, trial) for α in αs for β in βs for trial in trials] # tuples allow different types of elements
+if verbose
+    println("parameters: ", parameters)
+end
 sims = sim * length(parameters) # total simulations
-prob_str = join(string.(Int.(100 .* ps)))
-estimator_str, policy_str = "Q", "SM"
-filename_suffix = "$(sim)sims-$(trials)trials-$(n_arms)-arms-$(prob_str)-$(estimator_str)-$(policy_str)-α-β-$(n_αs)x$(n_βs)param-vs"
-# filename_suffix = filename_suffix(sims, trials, n_arms, ps, estimator_str, policy_str, n_αs, n_βs, rseed)
-rseed = 1234
 rseeds = [rseed * i for i in 1:sims]
-
-# TODO 記録用のファイル名を作成する
-# simulation_name = toString(n_αs) * "x" * toString(n_βs) * "x" * toString(sim)
-"regret-heatmap-10sims-100trials-4-arms-20204080-Q-SM-α-β-3x3param-vs.pdf"
-
-
+estimator_str, policy_str = "Q", "SM"
+fn_suffix = filename_suffix(sims, trials, n_arms, ps, estimator_str, policy_str, n_αs, n_βs, rseed)
+println("fn_suffix: ", fn_suffix)
 
 #@btime
-(regrets, params_and_regrets) = regret_for_Q_α_β(parameters, sim, trials, n_arms, distributions, rseeds)
+(regrets, params_and_regrets) = regret_for_Q_α_β_(parameters, sim, n_arms, distributions, rseeds)
 
 if verbose
     println("params_and_regrets: ", params_and_regrets)
@@ -66,11 +70,14 @@ end
 
 println("sims: $(sims), length(regrets): $(length(regrets))")
 
-regrets_matrix = reshape(regrets, n_αs, n_βs)
-fig = create_regret_heatmap(regrets_matrix', αs, βs)
-save("regret-heatmap-" * filename_suffix * ".pdf", fig)
+# regrets_matrix = reshape(regrets, n_αs, n_βs)
+regrets_matrix = reshape(regrets, n_αs, n_βs, n_trials)
+
+# fig = create_regret_heatmap(regrets_matrix', αs, βs)
+fig = create_regret_heatmaps_Q_trials(regrets_matrix, params_and_regrets, αs, βs, trials)
+save("regret-heatmap-" * fn_suffix * ".pdf", fig)
 fig
 
 # save regrets_matrix' to a file
 using JLD2
-save("regrets_matrix" * filename_suffix * ".jld2", "regrets_matrix", regrets_matrix)
+save("regrets_matrix" * fn_suffix * ".jld2", "regrets_matrix", regrets_matrix)
