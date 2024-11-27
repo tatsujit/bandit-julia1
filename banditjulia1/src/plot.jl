@@ -36,6 +36,12 @@ function create_regret_heatmaps_DLR(regrets_matrix::Array{Float64, 3},
     size_display = size(regrets_matrix, display_dim)
     n_display = (n_display >= size_display) ? size_display : n_display
     d_indices = display_indices(n_display, size_display)
+    # color scale by row
+    colorrange_map = [
+        (10, 60)
+        (10, 60)
+        (10, 60)
+    ]
     # again the next line dependent on the parameter to get fixed
     # print params_and_regrets
     # println("params_and_regrets: ", params_and_regrets)
@@ -49,12 +55,19 @@ function create_regret_heatmaps_DLR(regrets_matrix::Array{Float64, 3},
         if i > n_display
             break
         else
+            xlabel = ylabel = ""
+            if row == rows
+                xlabel = "Learning Rate (α+)"
+            end
+            if col == 1
+                ylabel = "Learning Rate (α-)"
+            end
             ax = Axis(f[row, col],
                       title = "$(fixed_parameter) = $(fixed_parameter_values[i])",
-                      xlabel = x_parameter,
-                      ylabel = y_parameter)
+                      xlabel = xlabel,
+                      ylabel = ylabel)
             # no transposition of regrets_matrix
-            hm = heatmap!(ax, αps, αns, regrets_matrix[:,:,d_indices[i]])
+            hm = heatmap!(ax, αps, αns, regrets_matrix[:,:,d_indices[i]], colorrange = colorrange_map[row])
             Colorbar(f[row, cols + 1], hm, label = "Regret")
         end
     end

@@ -2,3 +2,27 @@ name = "banditjulia1"
 uuid = "2d9c421d-41bd-421a-938b-1fe03354ea26"
 authors = ["tatsujit <tatsuji.takahashi@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+FLoops = "cc61a311-1640-44b5-9fba-1b764f453329"
+IceCream = "029bc01f-a38c-4df2-9931-c297cb6cdd02"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+ProgressBars = "49802e3a-d2f1-5c88-81d8-b72133a6f568"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
+[compat]
+CairoMakie = "0.12.16"
+DataFrames = "1.7.0"
+Distributed = "1.11.0"
+Distributions = "0.25.113"
+FLoops = "0.2.2"
+IceCream = "0.1.0"
+JLD2 = "0.5.10"
+Makie = "0.21.16"
+ProgressBars = "1.5.1"
+StatsBase = "0.34.3"
