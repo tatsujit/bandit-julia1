@@ -22,9 +22,9 @@ include("settings.jl")
 # import Pkg; Pkg.add("JLD2")
 
 verbose = false
-n_αps = n_αns = n_βs = 51# (display が3x3=9なら9以上だし、11じゃないとうまく \beta = 1.0, ..., 9.0 ともならない！　というのは直ったかも）
-display_values = 9
-sim = 1000  # simulations for each parameter value
+n_αps = n_αns = n_βs = 51 # (display が3x3=9なら9以上だし、11じゃないとうまく \beta = 1.0, ..., 9.0 ともならない！　というのは直ったかも）
+display_values = 9 # 9 is the default value
+sim = 100  # simulations for each parameter value
 trials = 150
 # ps = [0.2, 0.2, 0.4, 0.8]
 # ps = [0.7, 0.7, 0.8, 0.9]
@@ -70,7 +70,8 @@ regrets_matrix = reshape(regrets, n_αps, n_αns, n_βs)
 
 # fig = create_regret_heatmap(regrets_matrix[:,:,9]', αps, αns)
 # fig = create_regret_heatmaps(regrets_matrix, params_and_regrets, αps, αns, βs_display)
-fig = create_regret_heatmaps_DLR(regrets_matrix, params_and_regrets, αps, αns, 9)
+# fig = create_regret_heatmaps_DLR(regrets_matrix, params_and_regrets, αps, αns, display_values)
+fig = create_regret_heatmaps_DLR(regrets_matrix, params_and_regrets, αps, αns, display_values, false)
 save("regret-heatmap-" * fn_suffix * ".pdf", fig)
 fig
 

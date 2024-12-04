@@ -32,7 +32,7 @@ using FLoops
 verbose = false
 rseed = 1234
 n_αs = n_βs = 11
-sim = 1000  # simulations for each parameter value
+sim = 10  # simulations for each parameter value
 # trials = 150
 trials = [50, 100, 150, 300, 450, 600, 900, 1500, 3000]
 # trials = [50, 3000]
@@ -74,7 +74,7 @@ println("sims: $(sims), length(regrets): $(length(regrets))")
 regrets_matrix = reshape(regrets, n_αs, n_βs, n_trials)
 
 # fig = create_regret_heatmap(regrets_matrix', αs, βs)
-fig = create_regret_heatmaps_Q_trials(regrets_matrix, params_and_regrets, αs, βs, trials)
+fig = create_regret_heatmaps_Q_trials(regrets_matrix, params_and_regrets, αs, βs, trials, false)
 save("regret-heatmap-" * fn_suffix * ".pdf", fig)
 fig
 
