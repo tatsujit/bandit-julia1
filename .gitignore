@@ -3,6 +3,7 @@ b1.org
 *.pdf
 *.png
 banditjulia1/src/bandit1_expanded.jl
+banditjulia1/src/heatmap2.jl
 banditjulia1/src/*.mermaid
 banditjulia1/src/*.pdf
 banditjulia1/src/*.png

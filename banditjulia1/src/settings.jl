@@ -6,6 +6,7 @@ using Distributions
 using StatsBase
 # using Optim
 using Distributed
+using IceCream
 include("utils.jl")
 include("actionValueEstimator.jl")
 include("policy.jl")

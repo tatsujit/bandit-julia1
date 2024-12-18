@@ -22,19 +22,20 @@ sims: 4040100, length(regrets): 40401
 julia -t 4 として FLoops を使ったら、2倍くらい速くなるけど、とにかく長い計算で効き目があるはず
 """
 
-using IceCream
 include("settings.jl")
+using IceCream
+using FLoops
 # import Pkg; Pkg.add("CairoMakie")
 # using BenchmarkTools
 # using CairoMakie
-using FLoops
 
 verbose = false
 rseed = 1234
-n_αs = n_βs = 11
-sim = 10  # simulations for each parameter value
+n_αs = n_βs = 101
+sim = 100  # simulations for each parameter value
 # trials = 150
-trials = [50, 100, 150, 300, 450, 600, 900, 1500, 3000]
+# trials = [50, 100, 150, 300, 450, 600, 900, 1500, 3000]
+trials = [100]
 # trials = [50, 3000]
 n_trials = length(trials)
 # ps = [0.2, 0.2, 0.4, 0.8]
@@ -42,7 +43,8 @@ n_trials = length(trials)
 # ps = [0.1, 0.1, 0.1, 0.5]
 # ps = [0.7, 0.7, 0.8, 0.9]
 # ps = [0.8, 0.8, 0.8, 0.9]
-ps = [0.4, 0.4, 0.4, 0.4, 0.8]
+# ps = [0.4, 0.4, 0.4, 0.4, 0.8]
+ps = [0.3, 0.3, 0.5, 0.5, 0.7]
 # ps = [0.1, 0.1, 0.1, 0.1, 0.5]
 # ps = [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 0.8]
 n_arms = length(ps)
