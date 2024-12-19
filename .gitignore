@@ -8,3 +8,6 @@ banditjulia1/src/*.mermaid
 banditjulia1/src/*.pdf
 banditjulia1/src/*.png
 banditjulia1/src/*.jld2
+
+.vscode
+banditjulia1/*ipynb
