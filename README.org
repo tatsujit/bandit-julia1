@@ -99,7 +99,7 @@ classDiagram
 
 #+begin_src mermaid
 flowchart LR
-    subgraph Universe
+    subgraph Meta-Environment
         subgraph System
                  subgraph Agent
                           Policy
