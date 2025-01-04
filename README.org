@@ -107,7 +107,6 @@ flowchart LR
                  end
                  History
                  Environment
-        SetE[Set E]
         end
     end
 #+end_src
