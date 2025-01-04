@@ -1,0 +1,11 @@
+#+title: Estimation
+* やること
+** [[file:~/Dropbox/programming/r/rstudio/bandit-goal-exp-2024-12-26-Thu/analysis.org::*実験 1(定常)と実験 2(非定常)でデータを分けた上で分析のために処理する。 ~dat1~ と ~dat2~ を作る][実験 1(定常)と実験 2(非定常)でデータを分けた上で分析のために処理する。 ~dat1~ と ~dat2~ を作る]] のデータでパラメータ推定など行う！
+* テスト
+#+begin_src julia :session
+a(x) = x^2
+a(10)
+#+end_src
+
+#+RESULTS:
+: 100

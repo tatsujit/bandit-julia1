@@ -100,12 +100,13 @@ classDiagram
 #+begin_src mermaid
 flowchart LR
     subgraph Universe
-        subgraph SetA[Set A]
-            subgraph SetB[Set B]
-                SetC[Set C]
-            end
-            SetD[Set D]
-        end
+        subgraph System/SystemRich[Set A]
+                 subgraph Agent
+                          Policy
+                          Estimator
+                 end
+                 History
+                 Environment
         SetE[Set E]
     end
 #+end_src
