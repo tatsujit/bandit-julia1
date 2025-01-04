@@ -100,7 +100,7 @@ classDiagram
 #+begin_src mermaid
 flowchart LR
     subgraph Universe
-        subgraph System/SystemRich[Set A]
+        subgraph System
                  subgraph Agent
                           Policy
                           Estimator
@@ -108,5 +108,6 @@ flowchart LR
                  History
                  Environment
         SetE[Set E]
+        end
     end
 #+end_src
